@@ -1,0 +1,4 @@
+name: DimensionPlugin
+version: '1.0-SNAPSHOT'
+main: com.github.marobim815.dimensionPlugin.DimensionPlugin
+api-version: '1.21'
