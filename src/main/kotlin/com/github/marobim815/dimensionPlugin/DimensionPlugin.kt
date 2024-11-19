@@ -38,6 +38,7 @@ class DimensionPlugin : JavaPlugin(), Listener {
         }
     }
 
+
     override fun onDisable() {
         logger.info("플러그인 꺼짐.")
     }
