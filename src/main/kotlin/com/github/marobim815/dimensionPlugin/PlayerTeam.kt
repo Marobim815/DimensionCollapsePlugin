@@ -2,24 +2,26 @@ package com.github.marobim815.dimensionPlugin
 
 import org.bukkit.entity.Player
 
-class PlayerTeam {
-    private val playerTeam = mutableMapOf<String, MutableList<Player>>()
-    private val registeredPlayer = mutableListOf<Player>()
+data class Teams(val teamName: String, val members: MutableList<Player> = mutableListOf(), var leader: Player? = null)
 
-    fun registerTeam(player: Player): Boolean {
-        if (player !in registeredPlayer) {
-            registeredPlayer.add(player)
-            return true
-        }
-        return false
+object TeamManager {
+    private val teams = mutableMapOf<String, Teams>()
+
+    fun createTeam(name: String, leader: Player): Boolean {
+        if (teams.containsKey(name)) return false
+        val team = Teams(name, mutableListOf(leader), leader)
+        teams[name] = team
+        return true
     }
 
-    fun createTeam(teamName: String): Boolean {
-        if (teamName !in playerTeam.keys) {
-            playerTeam.keys.add(teamName)
-            return true
-        }
-        return false
+    fun addMember(teamName: String, player: Player): Boolean {
+        val team = teams[teamName] ?: return false
+        if (team.members.size >= 5) return false
+        team.members.add(player)
+        return true
     }
 
+    fun getTeam(player: Player): Teams? {
+        return teams.values.firstOrNull { it.members.contains(player) }
+    }
 }
