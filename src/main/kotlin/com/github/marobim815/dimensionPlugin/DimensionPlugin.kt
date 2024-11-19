@@ -34,7 +34,7 @@ class DimensionPlugin : JavaPlugin(), Listener {
         if (block.type == Material.BEDROCK) {
             val location = block.location
             val world = block.world
-            TeamCore.spawnCore(location, world, "팀 ${team?.teamName}의 코어")
+            TeamCore.placeCore(location, player)
         }
     }
 
