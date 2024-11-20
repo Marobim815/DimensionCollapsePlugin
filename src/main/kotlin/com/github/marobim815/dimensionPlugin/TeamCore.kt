@@ -17,11 +17,12 @@ object TeamCore : Listener{
             return false
         }
 
+        val team = TeamManager.getTeam(player)
         val world = location.world ?: return false
         val slime = world.spawn(location, Slime::class.java) { entity ->
             entity.size = CORE_SIZE
             entity.isInvulnerable = true
-            entity.customName = "" //TODO: 팀 이름으로 정하기
+            entity.customName = "${team?.teamName}팀의 코어"
             entity.isCustomNameVisible = true
         }
 
