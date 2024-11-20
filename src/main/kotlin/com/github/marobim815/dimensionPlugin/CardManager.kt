@@ -8,7 +8,7 @@ object CardManager {
     fun useTeamMemberCard(player: Player): Boolean {
         val team = TeamManager.getTeam(player) ?: return false
         if (team.members.size >= 5) {
-            player.sendMessage("이미 최대 팀원 수에 도달했습니다.")
+            player.sendMessage("§c이미 최대 팀원 수에 도달했습니다.")
             return false
         }
 
@@ -18,6 +18,7 @@ object CardManager {
         return true
     }
 
+    //강화 카드
     fun combineCardPieces(player: Player): ItemStack {
         return ItemStack(Material.DIAMOND_SWORD).apply {
             itemMeta = itemMeta?.apply {
