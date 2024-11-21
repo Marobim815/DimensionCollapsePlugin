@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 
+@Suppress("DEPRECATION")
 class ItemManager(private val plugin: JavaPlugin) {
     private val items = mutableMapOf<String, ItemStack>()
 
@@ -41,6 +42,7 @@ class ItemManager(private val plugin: JavaPlugin) {
         return item
     }
 
+    @Suppress("unused")
     fun getItem(id: String): ItemStack? {
         return items[id]?.clone()
     }

@@ -18,6 +18,7 @@ class DimensionPlugin : JavaPlugin(), Listener {
         logger.info("플러그인 활성화!!")
     }
 
+    @Suppress("DEPRECATION")
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val player = event.player

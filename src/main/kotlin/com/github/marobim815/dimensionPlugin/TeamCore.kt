@@ -7,6 +7,7 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Slime
 import org.bukkit.event.Listener
 
+@Suppress("DEPRECATION")
 object TeamCore : Listener{
     private val cores = mutableMapOf<Location, Double>()
     private const val CORE_SIZE = 3
@@ -32,6 +33,7 @@ object TeamCore : Listener{
         return true
     }
 
+    @Suppress("unused")
     fun damageCore(location: Location, damage: Double) {
         val currentHp = cores[location] ?: return
         val newHp = currentHp - damage
