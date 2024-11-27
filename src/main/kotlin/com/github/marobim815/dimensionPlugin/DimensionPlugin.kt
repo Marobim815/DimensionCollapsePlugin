@@ -8,6 +8,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
 
+@Suppress("DEPRECATION")
 class DimensionPlugin : JavaPlugin(), Listener {
     private lateinit var itemManager: ItemManager
 
