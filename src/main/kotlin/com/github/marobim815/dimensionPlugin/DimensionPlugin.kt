@@ -22,6 +22,7 @@ class DimensionPlugin : JavaPlugin(), Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val player = event.player
+        if (player.hasPlayedBefore()) return
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
         player.sendTitle("§6§l환영합니다!!", "§a$player", 10, 70, 20)
     }
