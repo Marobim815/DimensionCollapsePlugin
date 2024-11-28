@@ -17,9 +17,16 @@ class ItemManager(private val plugin: JavaPlugin) {
     private fun registerItems() {
         items["member_add_card"] = createCustomItem(
             Material.PAPER,
-            "§4팀원 생성 카드",
-            listOf("", ""),
+            "§6팀원 생성 카드",
+            listOf("§7팀원을 랜덤으로 생성합니다", ""),
             "member_add_card"
+        )
+
+				items["item_enhance_card"] = createCustomItem(
+            Material.PAPER,
+            "§6템 강화 카드",
+            listOf("§7템빨을 책임지는 카드", ""),
+            "item_enhance_card"
         )
     }
 
