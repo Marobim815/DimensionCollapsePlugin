@@ -14,8 +14,8 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.random.Random
 
+@Suppress("DEPRECATION")
 class ItemEffectListener : Listener {
-
     @EventHandler
     fun onPlayerUseCard(event: PlayerInteractEvent) {
         val player = event.player
