@@ -1,120 +1,164 @@
 package com.github.marobim815.dimensionPlugin
 
+import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.Sound
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
+import kotlin.random.Random
 
 class ItemEffectListener : Listener {
 
     @EventHandler
     fun onPlayerUseCard(event: PlayerInteractEvent) {
-        val user = event.player
+        val player = event.player
+        val itemInHand = player.inventory.itemInMainHand
 
-        val itemMeta: ItemMeta = user.inventory.itemInMainHand.itemMeta ?: return
+        val itemMeta: ItemMeta = itemInHand.itemMeta ?: return
         val plugin = JavaPlugin.getPlugin(DimensionPlugin::class.java)
 
         val key = NamespacedKey(plugin, "custom_item")
         val customItemId = itemMeta.persistentDataContainer.get(key, PersistentDataType.STRING)
 
-        when {
-            customItemId == "member_add_card" -> {
-                val userTeam = TeamManager.getTeam(user)
-                if (userTeam != null && user == userTeam.leader) {
-                    useTeamMemberCard(user)
+        when (customItemId) {
+            "item_enhance_card" -> {
+                if (useItemEnhanceCard(player)) {
+                    consumeItem(itemInHand)
                 } else {
-                    event.isCancelled = true
-                    user.sendMessage("§c팀원 생성 카드는 팀장만 사용할 수 있습니다!")
+                    player.sendMessage("§c강화에 실패했습니다!")
                 }
-            customItemId == "item_enhance_card" -> {
-                useItemEnhanceCard(user)
             }
         }
     }
 
     private fun useItemEnhanceCard(player: Player): Boolean {
-        val enhanceLevel: Int = Random.nextInt(1, 6)
-        val canEnhance: (ItemStack) -> Boolean = { it ->
-            when {
-                item.type.toString().endsWith("BOOTS") -> true
-                item.type.toString().endsWith("CHESTPLTE") -> true
-                item.type.toString().endsWith("SWORD") -> true
-                item.type.toString().endsWith("BOW") -> true
-                item.type.toString().endsWith("CROSSBOW") -> true
-                item.type.toString().endsWith("AXE") -> true
-                item.type.toString().endsWith("LEGGINGS") -> true
-                item.type.toString().endsWith("HELMET") -> true
-                else -> false
+        val enhanceLevel = Random.nextInt(1, 6)
+        val successChance = 0.5
+        val isSuccess = Random.nextDouble() < successChance
+
+        val canEnhance: (ItemStack) -> Boolean = { item ->
+            item.type.name.endsWith("SWORD") ||
+            item.type.name.endsWith("AXE") ||
+            item.type.name.endsWith("BOW") ||
+            item.type.name.endsWith("CROSSBOW") ||
+            item.type.name.endsWith("HELMET") ||
+            item.type.name.endsWith("CHESTPLATE") ||
+            item.type.name.endsWith("LEGGINGS") ||
+            item.type.name.endsWith("BOOTS")
+        }
+
+        val itemToEnhance = player.inventory.firstOrNull { it != null && canEnhance(it) }
+
+        if (itemToEnhance != null) {
+            if (isSuccess) {
+                enhanceItem(player, itemToEnhance, enhanceLevel)
+                player.sendMessage("§a§l아이템이 레벨 $enhanceLevel로 강화되었습니다!")
+                player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                return true
+            } else {
+                player.sendMessage("§c강화에 실패하여 아이템이 손상되었습니다!")
+                degradeItem(player, itemToEnhance)
+                player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 0.8f)
+                return false
             }
-        }
-        
-        val itemToEnhance = player.inventory.firstOrNull { item ->
-            item != null && canEnhance(item)
-        }
-        
-        return if (itemToEnhance != null): Boolean {
-            
-            true
         } else {
-            
-            false
+            player.sendMessage("§c강화할 수 있는 아이템이 없습니다!")
+            return false
         }
     }
 
     private fun enhanceItem(player: Player, item: ItemStack, level: Int) {
-        val meta = item.itemMeta
-        val attackSpeed = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)
-        val attackDamage = player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)
-        val maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
-        val armorUnbreak = player.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS)
-        val armorProtection = player.getAttribute(Attribute.GENERIC_ARMOR)
-        
-        if (meta != null) {
-            when (item.type.toString) {
-                Material.DIAMOND_SWORD, Material.IRON_SWORD, Material.GOLDEN_SWORD, Material.STONE_SWORD -> {
-                    meta.lore = "§6강화된 검"
-                    attackSpeed?.baseValue = (level.toDouble()) ^ 2
-                    
-                    // level ^ 2은 공격 속도 단축의 수치로, level * 2는 데미지 증가의 수치로 사용할 수 있습니다.
-                }
-                Material.DIAMOND_AXE, Material.IRON_AXE, Material.GOLDEN_AXE, Material.STONE_AXE -> {
-                    meta.lore = "§6강화된 도끼"
-                    // 데미지 증가
-                    // level * 2
-                }
-                Material.DIAMOND_BOOTS, Material.IRON_BOOTS, Material.GOLDEN_BOOTS, Material.LEATHER_BOOTS -> {
-                    meta.lore = "§6강화된 신발"
-                    // 신발은 이동 속도 증가
-                }
-                Material.DIAMOND_CHESTPLATE, Material.IRON_CHESTPLATE, Material.GOLDEN_CHESTPLATE, Material.LEATHER_CHESTPLATE -> {
-                    meta.lore = "§6강화된 갑옷"
-                    // 갑옷은 체력 증가
-                    healthAttribute?.baseValue = (level.toDouble)^2
-                    player.health = (level.toDouble)^2
-                }
-                Material.BOW, Material.CROSSBOW -> {
-                    meta.lore = "§6강화된 활/석궁"
-                    // 데미지 및 장전 시간 단축
+        val meta = item.itemMeta ?: return
+
+        when (item.type) {
+            // 검
+            Material.DIAMOND_SWORD, Material.IRON_SWORD, Material.GOLDEN_SWORD, Material.STONE_SWORD -> {
+                meta.lore = listOf("§6강화된 검 (Lv. $level)")
+                player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)?.baseValue = level * level.toDouble()
+                player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)?.baseValue = level * 2.0
+                if (level == 5) {
+                    item.durability = 0
+                    player.noDamageTicks = 0
                 }
             }
-            item.itemMeta = meta
+            // 도끼
+            Material.DIAMOND_AXE, Material.IRON_AXE, Material.GOLDEN_AXE, Material.STONE_AXE -> {
+                meta.lore = listOf("§6강화된 도끼 (Lv. $level)")
+                player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)?.baseValue = level * 2.0
+                if (level == 5) {
+                    item.durability = 0
+                }
+            }
+            // 신발
+            Material.DIAMOND_BOOTS, Material.IRON_BOOTS, Material.GOLDEN_BOOTS, Material.LEATHER_BOOTS -> {
+                meta.lore = listOf("§6강화된 신발 (Lv. $level)")
+                player.walkSpeed = 0.2f + (level * 0.05f)
+                if (level == 5) {
+                    item.durability = 0
+                }
+            }
+            // 갑옷 (투구, 흉갑, 바지)
+            Material.DIAMOND_HELMET, Material.IRON_HELMET, Material.GOLDEN_HELMET, Material.LEATHER_HELMET,
+            Material.DIAMOND_CHESTPLATE, Material.IRON_CHESTPLATE, Material.GOLDEN_CHESTPLATE, Material.LEATHER_CHESTPLATE,
+            Material.DIAMOND_LEGGINGS, Material.IRON_LEGGINGS, Material.GOLDEN_LEGGINGS, Material.LEATHER_LEGGINGS -> {
+                meta.lore = listOf("§6강화된 갑옷 (Lv. $level)")
+                val maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+                if (maxHealth != null) {
+                    maxHealth.baseValue += level * 20.0
+                    player.health = maxHealth.baseValue
+                }
+                if (level == 5) {
+                    item.durability = 0
+                }
+            }
+            // 활 및 석궁
+            Material.BOW, Material.CROSSBOW -> {
+                meta.lore = listOf("§6강화된 원거리 무기 (Lv. $level)")
+                player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)?.baseValue = level * 2.0
+                if (level == 5) {
+                    item.durability = 0
+                }
+            }
+            else -> return
         }
+        item.itemMeta = meta
     }
 
-    private fun useTeamMemberCard(player: Player): Boolean {
-        val team = TeamManager.getTeam(player) ?: return false
-        if (team.members.size >= 5) {
-            player.sendMessage("§c이미 최대 팀원 수에 도달했습니다.")
-            return false
+    private fun degradeItem(player: Player, item: ItemStack) {
+        val failChance = 0.4 // 레벨 감소 확률 (40%)
+        val meta = item.itemMeta ?: return
+
+        if (Random.nextDouble() < failChance) {
+            val currentLore = meta.lore
+            if (currentLore != null && currentLore.isNotEmpty()) {
+                val newLevel = currentLore.first().filter { it.isDigit() }.toInt() - 1
+                if (newLevel > 0) {
+                    meta.lore = listOf("§6강화된 아이템 (Lv. $newLevel)")
+                    player.sendMessage("§e아이템의 레벨이 $newLevel로 감소했습니다.")
+                }
+            }
         } else {
-            val newMember = player.server.offlinePlayers.filter { it !in team.members }.random()
-            team.members.add(newMember as Player)
-            player.sendMessage("${newMember.name}님이 팀원으로 추가되었습니다!")
-            return true
+            item.amount -= 1
+            if (item.amount <= 0) {
+                item.type = Material.AIR
+                player.sendMessage("§c아이템이 파괴되었습니다!")
+            }
+        }
+        item.itemMeta = meta
+    }
+
+    private fun consumeItem(item: ItemStack) {
+        if (item.amount > 1) {
+            item.amount -= 1
+        } else {
+            item.type = Material.AIR
         }
     }
 }
