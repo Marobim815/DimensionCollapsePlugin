@@ -37,7 +37,7 @@ class ItemEffectListener : Listener {
     }
 
     private fun useItemEnhanceCard(player: Player): Boolean {
-        val enhanceLevel = Random.nextInt(1, 4)
+        val enhanceLevel: Int = Random.nextInt(1, 6)
         val canEnhance: (ItemStack) -> Boolean = { it ->
             when {
                 item.type.toString().endsWith("BOOTS") -> true
@@ -51,8 +51,57 @@ class ItemEffectListener : Listener {
                 else -> false
             }
         }
-        val itemToEnhance = {item ->
-            //TODO
+        
+        val itemToEnhance = player.inventory.firstOrNull { item ->
+            item != null && canEnhance(item)
+        }
+        
+        return if (itemToEnhance != null): Boolean {
+            
+            true
+        } else {
+            
+            false
+        }
+    }
+
+    private fun enhanceItem(player: Player, item: ItemStack, level: Int) {
+        val meta = item.itemMeta
+        val attackSpeed = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)
+        val attackDamage = player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)
+        val maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+        val armorUnbreak = player.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS)
+        val armorProtection = player.getAttribute(Attribute.GENERIC_ARMOR)
+        
+        if (meta != null) {
+            when (item.type.toString) {
+                Material.DIAMOND_SWORD, Material.IRON_SWORD, Material.GOLDEN_SWORD, Material.STONE_SWORD -> {
+                    meta.lore = "§6강화된 검"
+                    attackSpeed?.baseValue = (level.toDouble()) ^ 2
+                    
+                    // level ^ 2은 공격 속도 단축의 수치로, level * 2는 데미지 증가의 수치로 사용할 수 있습니다.
+                }
+                Material.DIAMOND_AXE, Material.IRON_AXE, Material.GOLDEN_AXE, Material.STONE_AXE -> {
+                    meta.lore = "§6강화된 도끼"
+                    // 데미지 증가
+                    // level * 2
+                }
+                Material.DIAMOND_BOOTS, Material.IRON_BOOTS, Material.GOLDEN_BOOTS, Material.LEATHER_BOOTS -> {
+                    meta.lore = "§6강화된 신발"
+                    // 신발은 이동 속도 증가
+                }
+                Material.DIAMOND_CHESTPLATE, Material.IRON_CHESTPLATE, Material.GOLDEN_CHESTPLATE, Material.LEATHER_CHESTPLATE -> {
+                    meta.lore = "§6강화된 갑옷"
+                    // 갑옷은 체력 증가
+                    healthAttribute?.baseValue = (level.toDouble)^2
+                    player.health = (level.toDouble)^2
+                }
+                Material.BOW, Material.CROSSBOW -> {
+                    meta.lore = "§6강화된 활/석궁"
+                    // 데미지 및 장전 시간 단축
+                }
+            }
+            item.itemMeta = meta
         }
     }
 
