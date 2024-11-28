@@ -30,7 +30,29 @@ class ItemEffectListener : Listener {
                     event.isCancelled = true
                     user.sendMessage("§c팀원 생성 카드는 팀장만 사용할 수 있습니다!")
                 }
+            customItemId == "item_enhance_card" -> {
+                useItemEnhanceCard(user)
             }
+        }
+    }
+
+    private fun useItemEnhanceCard(player: Player): Boolean {
+        val enhanceLevel = Random.nextInt(1, 4)
+        val canEnhance: (ItemStack) -> Boolean = { it ->
+            when {
+                item.type.toString().endsWith("BOOTS") -> true
+                item.type.toString().endsWith("CHESTPLTE") -> true
+                item.type.toString().endsWith("SWORD") -> true
+                item.type.toString().endsWith("BOW") -> true
+                item.type.toString().endsWith("CROSSBOW") -> true
+                item.type.toString().endsWith("AXE") -> true
+                item.type.toString().endsWith("LEGGINGS") -> true
+                item.type.toString().endsWith("HELMET") -> true
+                else -> false
+            }
+        }
+        val itemToEnhance = {item ->
+            //TODO
         }
     }
 
