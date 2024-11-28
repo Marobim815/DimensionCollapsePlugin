@@ -22,7 +22,7 @@ class ItemManager(private val plugin: JavaPlugin) {
             "member_add_card"
         )
 
-		items["item_enhance_card"] = createCustomItem(
+        items["item_enhance_card"] = createCustomItem(
             Material.PAPER,
             "§6템 강화 카드",
             listOf("§7템빨을 책임지는 카드", ""),
