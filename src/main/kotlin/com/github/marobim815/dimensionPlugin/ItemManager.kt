@@ -28,6 +28,13 @@ class ItemManager(private val plugin: JavaPlugin) {
             listOf("§7템빨을 책임지는 카드", ""),
             "item_enhance_card"
         )
+
+        items["core_block"] = createCustomItem(
+            Material.ENDER_STONE,
+            "§c팀 코어 블록",
+            listOf("§7팀의 중심을 이룰 블록", "§7적당한 위치에 합니다!"),
+            "core_block"
+        )
     }
 
     private fun createCustomItem(
@@ -49,7 +56,6 @@ class ItemManager(private val plugin: JavaPlugin) {
         return item
     }
 
-    @Suppress("unused")
     fun getItem(id: String): ItemStack? {
         return items[id]?.clone()
     }
