@@ -22,13 +22,32 @@ class DimensionPlugin : JavaPlugin(), Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val player = event.player
-        if (player.hasPlayedBefore()) {
-            return
+        if (player.hasPlayedBefore()) return
+
+        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+        player.sendTitle("§6§l환영합니다!!", "§a${player.name}", 10, 70, 20)
+
+        val team = TeamManager.getTeam(player)
+        if (team?.leader == player) {
+            val coreBlock = itemManager.getItem("core_block")
+            coreBlock?.let {
+                player.inventory.addItem(it)
+                player.sendMessage("§a팀 리더로서 코어 블록을 받았습니다!")
+            }
         }
-        else {
-            player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
-            player.sendTitle("§6§l환영합니다!!", "§a$player", 10, 70, 20)
+    }
+
+    @EventHandler
+    fun onPlayerDeath(event: PlayerDeathEvent) {
+        val player = event.player
+        val inventory = player.inventory          
+        val coreBlockKey = NamespacedKey(plugin, "custom_item")
+        val itemsToKeep = inventory.contents.filter { item ->
+            val meta = item?.itemMeta ?: return@filter false
+            meta.persistentDataContainer[coreBlockKey, PersistentDataType.STRING] == "core_block"
         }
+
+        itemsToKeep.forEach { item -> player.inventory.addItem(item) }
     }
 
     @EventHandler
@@ -37,15 +56,17 @@ class DimensionPlugin : JavaPlugin(), Listener {
         val block = event.block
         val location = block.location
 
-        if (location.y in 0.0..60.0) {
-            if (block.type == Material.BEDROCK) {
-                TeamCore.placeCore(location, player)
+        if (TeamCore.isCoreBlock(player.inventory.itemInMainHand)) {
+            if (location.y !in 0.0..60.0) {
+                player.sendMessage("§c코어는 y좌표 0~60 사이에만 설치할 수 있습니다!")
+                player.playSound(location, Sound.BLOCK_ANVIL_DESTROY, 1.0f, 1.0f)
+                event.isCancelled = true
+                return
+            }
+
+            if (TeamCore.placeCore(location, player)) {
                 player.playSound(location, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f)
             }
-        } else {
-            player.sendMessage("§c코어는 y좌표 0~60사이에 설치 가능합니다!!")
-            player.playSound(location, Sound.BLOCK_ANVIL_DESTROY, 1.0f, 1.0f)
-            event.isCancelled = true
         }
     }
 
