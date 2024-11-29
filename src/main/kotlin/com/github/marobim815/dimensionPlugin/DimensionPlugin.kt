@@ -64,10 +64,8 @@ class DimensionPlugin : JavaPlugin(), Listener {
                 return
             }
 
-            if (TeamCore.placeCore(location, player)) {
-                event.isCanceled = true
-                player.playSound(location, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f)
-            }
+            TeamCore.placeCore(location, player)
+            player.playSound(location, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f)
         }
     }
 
