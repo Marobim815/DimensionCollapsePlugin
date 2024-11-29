@@ -12,19 +12,9 @@ object CardManager {
             return false
         }
 
-        val newMember = player.server.offlinePlayers.filter { it !in team.members }.random()
+        val newMember = PlayerTeam.registeredPlayer.filter { it !in team.members }.random()
         team.members.add(newMember as Player)
         player.sendMessage("${newMember.name}님이 팀원으로 추가되었습니다!")
         return true
-    }
-
-    //강화 카드
-    @Suppress("DEPRECATION")
-    fun combineCardPieces(player: Player): ItemStack {
-        return ItemStack(Material.DIAMOND_SWORD).apply {
-            itemMeta = itemMeta?.apply {
-                setDisplayName("강화 카드")
-            }
-        }
     }
 }
