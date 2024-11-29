@@ -6,7 +6,8 @@ data class Teams(val teamName: String, val members: MutableList<Player> = mutabl
 
 object TeamManager {
     private val teams = mutableMapOf<String, Teams>()
-
+    private var registeredPlayer = mutableListOf<Player>()
+    
     fun createTeam(name: String, leader: Player): Boolean {
         if (teams.containsKey(name)) return false
         val team = Teams(name, mutableListOf(leader), leader)
@@ -23,5 +24,11 @@ object TeamManager {
 
     fun getTeam(player: Player): Teams? {
         return teams.values.firstOrNull { it.members.contains(player) }
+    }
+    
+    fun registerPlayer(player: Player): Boolean {
+        if (!registerPlayer.contains(player)) return false
+        registeredPlayer.add(player)
+        return true
     }
 }
