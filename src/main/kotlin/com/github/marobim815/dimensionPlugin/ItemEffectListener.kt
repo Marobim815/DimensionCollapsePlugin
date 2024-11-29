@@ -80,7 +80,7 @@ class ItemEffectListener : Listener {
         when (item.type) {
             // 검
             Material.DIAMOND_SWORD, Material.IRON_SWORD, Material.GOLDEN_SWORD, Material.STONE_SWORD -> {
-                meta.lore = listOf("§6강화된 검 (Lv. $level)")
+                meta.lore = listOf("§6강화된 아이템 (Lv. $level)")
                 player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)?.baseValue = level * level.toDouble()
                 player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)?.baseValue = level * 2.0
                 if (level == 5) {
@@ -90,7 +90,7 @@ class ItemEffectListener : Listener {
             }
             // 도끼
             Material.DIAMOND_AXE, Material.IRON_AXE, Material.GOLDEN_AXE, Material.STONE_AXE -> {
-                meta.lore = listOf("§6강화된 도끼 (Lv. $level)")
+                meta.lore = listOf("§6강화된 아이템 (Lv. $level)")
                 player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)?.baseValue = level * 2.0
                 if (level == 5) {
                     item.durability = 0
@@ -98,7 +98,7 @@ class ItemEffectListener : Listener {
             }
             // 신발
             Material.DIAMOND_BOOTS, Material.IRON_BOOTS, Material.GOLDEN_BOOTS, Material.LEATHER_BOOTS -> {
-                meta.lore = listOf("§6강화된 신발 (Lv. $level)")
+                meta.lore = listOf("§6강화된 아이템 (Lv. $level)")
                 player.walkSpeed = 0.2f + (level * 0.05f)
                 if (level == 5) {
                     item.durability = 0
@@ -108,7 +108,7 @@ class ItemEffectListener : Listener {
             Material.DIAMOND_HELMET, Material.IRON_HELMET, Material.GOLDEN_HELMET, Material.LEATHER_HELMET,
             Material.DIAMOND_CHESTPLATE, Material.IRON_CHESTPLATE, Material.GOLDEN_CHESTPLATE, Material.LEATHER_CHESTPLATE,
             Material.DIAMOND_LEGGINGS, Material.IRON_LEGGINGS, Material.GOLDEN_LEGGINGS, Material.LEATHER_LEGGINGS -> {
-                meta.lore = listOf("§6강화된 갑옷 (Lv. $level)")
+                meta.lore = listOf("§6강화된 아이템 (Lv. $level)")
                 val maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
                 if (maxHealth != null) {
                     maxHealth.baseValue += level * 20.0
@@ -120,7 +120,7 @@ class ItemEffectListener : Listener {
             }
             // 활 및 석궁
             Material.BOW, Material.CROSSBOW -> {
-                meta.lore = listOf("§6강화된 원거리 무기 (Lv. $level)")
+                meta.lore = listOf("§6강화된 아이템 (Lv. $level)")
                 player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)?.baseValue = level * 2.0
                 if (level == 5) {
                     item.durability = 0
