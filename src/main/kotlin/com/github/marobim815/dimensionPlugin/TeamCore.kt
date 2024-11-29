@@ -12,15 +12,15 @@ object TeamCore : Listener{
     private val cores = mutableMapOf<Location, Double>()
     private const val CORE_SIZE = 3
     private const val MAX_HP = 2000.0
-
-    fun placeCore(location: Location, player: Player): Boolean {
+    
+    fun placeCore(location: Location, player: Player) {
         if (cores.containsKey(location)) {
             player.sendMessage("§c이미 이 위치에 코어가 설치되어 있습니다!")
-            return false
+            return
         }
 
         val team = TeamManager.getTeam(player)
-        val world = location.world ?: return false
+        val world = location.world ?: return
         val slime = world.spawn(location, Slime::class.java) { entity ->
             entity.size = CORE_SIZE
             entity.isInvulnerable = true
@@ -29,8 +29,7 @@ object TeamCore : Listener{
         }
 
         cores[slime.location] = MAX_HP
-        player.sendMessage("§a코어가 성공적으로 설치되었습니다!")
-        return true
+        player.sendMessage("§a코어가 성공적으로 설치되었습니다!")3-
     }
 
     @Suppress("unused")
