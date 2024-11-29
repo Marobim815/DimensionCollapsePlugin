@@ -52,4 +52,11 @@ object TeamCore : Listener{
             it.playSound(location, Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f)
         }
     }
+
+    fun isCoreBlock(itemStack: ItemStack?): Boolean {
+        if (itemStack == null || itemStack.type == Material.AIR) return false
+        val meta = itemStack.itemMeta ?: return false
+        val key = NamespacedKey(DimensionPlugin.instance, "custom_item")
+        return meta.persistentDataContainer.get(key, PersistentDataType.STRING) == "core_block"
+    }
 }
