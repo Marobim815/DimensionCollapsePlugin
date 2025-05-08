@@ -109,6 +109,9 @@ object CommandManager : CommandExecutor {
 
 // EventListener
 object EventListener : Listener {
+
+    private const val DROP_MINERAL = 3
+
     @EventHandler
     fun onPlayerDamage(event: EntityDamageByEntityEvent) {
         val damager = event.damager as Player
@@ -118,6 +121,35 @@ object EventListener : Listener {
     }
     
     // todo
+    @EventHandler
+    fun onBlockBreak(event: BlockBreakEvent) {
+        val player = event.player
+        val block = event.block
+        val tool = player.inventory.itemInMainHand
+
+        if (!tool.type.name.contains("PICKAXE")) return
+        if (tool.itemMeta?.hasEnchant(Enchantment.SILK_TOUCH) == true) return
+
+        val smeltedItem = getSmeltedItem(block.type) ?: return
+
+        event.isDropItems = false
+
+        val drop = ItemStack(smeltedItem, DROP_MINERAL)
+        block.world.dropItemNaturally(block.location, drop)
+    }
+
+    private fun getSmeltedItem(type: Material): Material? {
+        return when (type) {
+            Material.IRON_ORE -> Material.IRON_INGOT
+            Material.DEEPSLATE_IRON_ORE -> Material.IRON_INGOT
+            Material.GOLD_ORE -> Material.GOLD_INGOT
+            Material.DEEPSLATE_GOLD_ORE -> Material.GOLD_INGOT
+            Material.COPPER_ORE -> Material.COPPER_INGOT
+            Material.DEEPSLATE_COPPER_ORE -> Material.COPPER_INGOT
+            Material.ANCIENT_DEBRIS -> Material.NETHERITE_SCRAP
+            else -> null
+        }
+    }
 }
 
 // Utils
